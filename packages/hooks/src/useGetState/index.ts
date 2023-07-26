@@ -12,10 +12,14 @@ function useGetState<S = undefined>(): [
   GetStateAction<S | undefined>,
 ];
 function useGetState<S>(initialState?: S) {
-  const [state, setState] = useState(initialState);
+  const [state, setInnerState] = useState(initialState);
   const stateRef = useRef(state);
-  stateRef.current = state;
 
+  const setState = useCallback((originState) => {
+    stateRef.current = originState;
+    setInnerState(originState)
+  }, [])
+  
   const getState = useCallback(() => stateRef.current, []);
 
   return [state, setState, getState];
